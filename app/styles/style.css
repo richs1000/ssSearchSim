@@ -1,0 +1,76 @@
+/*
+ * The controls view holds the widgets the user
+ * can use to provide input to the simulation.
+ * This is a div that goes across the top of the 
+ * window.
+ */
+.controlsView {
+	border: 5px solid black;
+	background-color: #cccccc;
+	text-align: center;
+}
+
+/*
+ * The graph view contains a canvas that displays
+ * a representation of the graph.
+ * This is a div that sits on the left side of
+ * the screen.
+ */
+.graphView {
+	border: 5px solid black;
+	float: left;
+	text-align: center;
+}
+
+/*
+ * The tree view contains a canvas that displays
+ * a representation of the tree.
+ * This is a div that sits next to the graph 
+ * view.
+ */
+.treeView {
+	border: 5px solid black;
+	float: left;
+	text-align: center;
+}
+
+
+/*
+ * The fringe view contains a canvas that displays
+ * a representation of the fringe.
+ * This is a div that sits below the graph 
+ * and tree views and spans the entire window.
+ */
+.fringeView {
+	border: 5px solid black;
+	clear: both;
+}
+
+
+/*
+ * A fieldset holds several related controls on
+ * the same line.
+ */
+fieldset {
+	border: 0;
+}
+
+
+/* 
+ * A spinner used to set the depth limit of the 
+ * search.
+ */
+#depthLimitSpnr {
+	width: 50px;
+}
+
+
+/*
+ * Stuff I do not need anymore
+ */
+
+// type of input used for start node and end node
+select {
+	width: 100px;
+}
+

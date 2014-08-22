@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+<!--
+		<link rel="stylesheet" href="app/styles/jquery-ui-1.11.1/jquery-ui.theme.min.css">
+		<script src="libs/jquery-1.11.1.min.js"></script>
+		<script src="libs/jquery-ui-1.11.1/jquery-ui.min.js"></script>
+-->
+
+		<link rel="stylesheet" href="app/styles/style.css">
+
+		<!-- jQuery stuff -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />
+		<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+		
+		<!-- Simulation interface to Smart Sparrow AELP -->
+		<script src= "https://d1rpkia8qpfj4t.cloudfront.net/js/pipit-0.63.min.js"></script>
+	</head>
+	<body>
+		<div class="controlsView">
+			<form action="#">
+				<div id="SearchAlgorithm">
+					<input type="radio" id="chooseBtn" name="algorithmRB" checked="true"><label for="chooseBtn">Choose a search algorithm:</label>
+					<input type="radio" id="dfsBtn" name="algorithmRB"><label for="dfsBtn">DFS</label>
+					<input type="radio" id="dfsidBtn" name="algorithmRB"><label for="dfsidBtn">DFS-ID</label>
+					<input type="radio" id="bfsBtn" name="algorithmRB"><label for="bfsBtn">BFS</label>
+					<input type="radio" id="ucsBtn" name="algorithmRB"><label for="ucsBtn">UCS</label>
+					<input type="radio" id="greedyBtn" name="algorithmRB"><label for="greedyBtn">Greedy</label>
+					<input type="radio" id="astarBtn" name="algorithmRB"><label for="astarBtn">A-Star</label>
+				</div>
+
+				<fieldset>
+					<label for="depthLimitSpnr">Depth Limit:</label>
+					<input id="depthLimitSpnr" width="50px" name="value">
+					<button type="button" id="nextBtn">Next Step</button>
+					<button type="button" id="resetBtn">Reset</button>
+				</fieldset>
+				
+				<p>
+					<h1>Choose a search algorithm by pressing on one of the buttons above.</h1>
+				</p>
+			</form>
+		</div>
+		
+		<div class="graphView">
+			<p>
+				<h1>State Space Graph</h1>
+			</p>
+			<canvas id="graphCanvas" width="400" height="400"></canvas>
+		</div>
+		
+		<div class="treeView">
+			<p>
+				<h1>Search Tree</h1>
+			</p>
+			<canvas id="treeCanvas" width="400" height="400"></canvas>
+		</div>
+		<div class="fringeView">
+			<h1>Fringe</h1>
+			<p id="fringeDisplay">
+			</p>
+			<h1>Expanded Nodes</h1>
+			<p id="expandedNodesDisplay">
+			</p>			
+		</div>
+		
+		<script type="text/javascript" src="app/scripts/models.js"></script>
+		<script type="text/javascript" src="app/scripts/view.js"></script>
+		<script type="text/javascript" src="app/scripts/main.js"></script>
+	</body>
+</html>
+
+
