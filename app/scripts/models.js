@@ -389,16 +389,18 @@ SearchModel.prototype.addNodeToTree = function(nodeID, heuristic, cost, parent, 
 	// set values in object
 	newTreeNode.nodeID = nodeID;
 	newTreeNode.heuristic = heuristic;
-	newTreeNode.cost = cost;
 	newTreeNode.parent = parent;
 	newTreeNode.graphNodeID = graphNodeID;
-	// if this isn't the root calculate depth of node and
+	// if this isn't the root calculate depth and cost of node and
 	// update it's parent's list of children
 	if (parent != '') {
 		// find the index of the parent in the tree's node list
 		parentIndex = this.tree.findNode(parent);
 		// the child's depth is 1 + the parent's
 		newTreeNode.depth = 1 + this.tree.nodes[parentIndex].depth;
+		// the child's cost is the cost of the last edge plus the cost
+		// to reach the parent
+		newTreeNode.cost = cost + this.tree.nodes[parentIndex].cost;
 		// add this node to the parent's list of children
 		this.tree.nodes[parentIndex].children.push(nodeID);
 	// if this is the root then depth = 0 which is the default
@@ -484,6 +486,27 @@ TreeModel.prototype.dumpTree = function() {
 
 
 /*
+ * FringeNode represents the nodes within the fringe. Each
+ * fringe node corresponds to a node in the search tree. 
+ * Depending on the search algorithm being used, it may or 
+ * may not have:
+ * - a heuristic value indicating the node's distance from 
+ * the goal node, where a larger value indicates greater 
+ * distance from the goal.
+ * - a cost value indicating the sum of all the edge costs
+ * traversed to reach this node in the tree
+ */
+function FringeNode() {
+	// Node ID - same as the ID of a node in the search tree
+	this.nodeID = '';
+	// Heuristic (h) value - Distance from node to goal
+	this.heuristic = 0;
+	// Cost (g) value - Total cost of all edges traversed to reach this node
+	this.cost = 0;
+} // FringeNode
+
+
+/*
  * The fringe keeps track of what nodes are available for expansion.
  * The fringe is implemented as a priority queue. The "priority" is
  * determined by the algorithm:
@@ -494,7 +517,7 @@ TreeModel.prototype.dumpTree = function() {
  *   A* - cost + heuristic (ascending)
  */
 function FringeModel() {
-	// array of Tree Node IDs - starts off empty
+	// array of Fringe Nodes - starts off empty
 	this.nodes = [];
 }
 
@@ -512,7 +535,7 @@ FringeModel.prototype.dumpFringe = function() {
 	// loop through all items in the array
 	for	(index = 0; index < this.nodes.length; index++) {
 		// print out each nodeID in the fringe
-		console.log("Index: " + index + " ID: " + this.nodes[index]);
+		console.log("Index: " + index + " ID: " + this.nodes[index].nodeID);
 	}
 }
 
@@ -522,7 +545,7 @@ FringeModel.prototype.fringeToString = function() {
 	// loop through all items in the array
 	for	(index = 0; index < this.nodes.length; index++) {
 		// add each nodeID in the fringe to our string
-		fringeStr += this.nodes[index] + " ";
+		fringeStr += this.nodes[index].nodeID + " ";
 	}
 	// return the string when we're done
 // 	console.log(fringeStr);
@@ -530,13 +553,44 @@ FringeModel.prototype.fringeToString = function() {
 }
 
 
+FringeModel.prototype.lowestCostNodeIndex = function() {
+	// keep track of current lowest cost
+	var lowestCost = -1;
+	// keep index of node with current lowest cost
+	var lowestCostIndex = -1;
+	// loop through all the items in the fringe
+	for	(index = 0; index < this.nodes.length; index++) {	
+		// compare the current lowest cost to current node's cost
+		if (lowestCost == -1 || lowestCost > this.nodes[index].cost) {
+			// if we found a new lowest cost, keep track of it
+			lowestCost = this.nodes[index].cost;
+			lowestCostIndex = index;
+		}
+	}
+	// return the index
+	return index;
+}
 
 /*
  * This function adds a new tree nodeID to the fringe.
  */
-SearchModel.prototype.addNodeToFringe = function(nodeID) {
+SearchModel.prototype.addNodeToFringe = function(nodeID, cost, heuristic) {
 	// Does the tree node exist?
 	if (this.tree.findNode(nodeID) < 0) return;
-	// add nodeID to end of array of nodes
-	this.fringe.nodes[this.fringe.nodes.length] = nodeID;	
+	// Did we get a cost value?
+	if (cost === undefined) {
+          cost = 0;
+    }
+    // Did we get a heuristic value
+	if (heuristic === undefined) {
+          heuristic = 0;
+    }
+	// create a fringe node object
+	var newFringeNode = new FringeNode();
+	// set values in object
+	newFringeNode.nodeID = nodeID;
+	newFringeNode.heuristic = heuristic;
+	newFringeNode.cost = cost;	
+	// add fringe node to end of array of nodes
+	this.fringe.nodes[this.fringe.nodes.length] = newFringeNode;	
 }

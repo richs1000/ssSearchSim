@@ -96,35 +96,3 @@ SearchController.prototype.breadthFirstSearchNextStep = function() {
 	return -1;
 }
 
-
-SearchController.prototype.getChildren = function(graphNodeID) {
-	// get index of graph node
-	graphNodeIndex = this.searchModel.graph.findNode(graphNodeID);
-	// sanity check - does the graph node index make sense?
-	if (graphNodeIndex < 0) return;
-// 	console.log("graphNodeID: " + graphNodeID + " graphNodeIndex: " + graphNodeIndex);
-	// loop through all the edges in the graph (yes, this is dumb)
-	for (edgeIndex = 0; edgeIndex < this.searchModel.graph.edges.length; edgeIndex++) {
-		// does the edge start at our graph node?
-		if (this.searchModel.graph.edges[edgeIndex].fromNodeID == graphNodeID) {
-			childNodeID = this.searchModel.graph.edges[edgeIndex].toNodeID;
-			// keep track of new "discovered" graph nodes to update the
-			// view of the graph
-			if (! nodeInList(childNodeID, this.discoveredNodes)) {
-				this.discoveredNodes[this.discoveredNodes.length] = childNodeID;
-			}
-			// get a unique ID for child node
-			uID = this.uniqueID(childNodeID);
-			// add node to search tree
-			this.searchModel.addNodeToTree(uID,						// nodeID
-											0,						// heuristic
-											0,						// cost
-											treeNodeID,				// parent in tree
-											childNodeID);			// graphNodeID
-			// put node on fringe - it's a queue so we add
-			// to the back
-			this.searchModel.addNodeToFringe(uID);
-		} // if an edge starts at our current node
-	} // for loop for edges in graph
-}
-		

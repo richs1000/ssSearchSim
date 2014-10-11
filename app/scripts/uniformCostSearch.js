@@ -18,7 +18,7 @@ SearchController.prototype.uniformCostSearchFirstStep = function() {
 	// functions
 	this.discoveredNodes = [this.searchModel.startNode];
 	// get a unique ID for the start node
-	uID = this.uniqueID(this.searchModel.startNode)
+	var uID = this.uniqueID(this.searchModel.startNode)
 	// make the start node the root of the search tree
 	this.searchModel.addNodeToTree(uID,									// nodeID
 								0, 										// heuristic
@@ -43,9 +43,13 @@ SearchController.prototype.uniformCostSearchNextStep = function() {
 // 		console.log("--------------");
 		// update view of graph
 		this.searchView.drawGraph(this.discoveredNodes);
-		// pull next nodeID off of fringe - it's a queue so
-		// we remove from the front
-		treeNodeID = this.searchModel.fringe.nodes.shift();
+		// pull next nodeID off of fringe - it's a priority queue ordered
+		// by cost, so first we find the node with the lowest cost
+		var fringeNodeIndex = this.searchModel.fringe.lowestCostNode();
+		// get the nodeID of the lowest cost node
+		var treeNodeID = this.searchModel.fringe.nodes[fringeNodeIndex].nodeID;
+		// remove the node from the fringe
+		this.searchModel.fringe.nodes.splice(fringeNodeIndex, 1);
 		// keep track of which tree nodes have been expanded
 		this.expandedNodes[this.expandedNodes.length] = treeNodeID;
 		// update fringe view
@@ -54,11 +58,11 @@ SearchController.prototype.uniformCostSearchNextStep = function() {
 		// update tree view
 		this.searchView.drawTree();		
 		// get index of tree node
-		treeNodeIndex = this.searchModel.tree.findNode(treeNodeID);
+		var treeNodeIndex = this.searchModel.tree.findNode(treeNodeID);
 		// sanity check - does the tree node index make sense?
 		if (treeNodeIndex < 0) return ["tree node index out of bounds"];
 		// get corresponding graph node ID
-		graphNodeID = this.searchModel.tree.nodes[treeNodeIndex].graphNodeID;
+		var graphNodeID = this.searchModel.tree.nodes[treeNodeIndex].graphNodeID;
 // 		console.log("treeNodeID: " + treeNodeID + " treeNodeIndex: " + treeNodeIndex);
 		// if we found the goal then return the answer
 		if (graphNodeID == this.searchModel.endNode) {
@@ -76,7 +80,7 @@ SearchController.prototype.uniformCostSearchNextStep = function() {
 			return ["Exceeded depth limit"];
 		} else {
 			// otherwise, we add the node's children to the fringe
-			this.getChildren(graphNodeID);
+			this.getChildren(graphNodeID, treeNodeID);
 			// update fringe view - to include children
 			this.searchView.updateFringeView(this.searchModel.fringe.fringeToString(),
 										arrayToString(this.expandedNodes));
