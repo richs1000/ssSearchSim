@@ -21,11 +21,7 @@ function SearchView() {
 }
 
 
-SearchView.prototype.clearButtons = function() { 
-}
-
 SearchView.prototype.reset = function() { 
-// 	console.log("resetting view");
 	// set up graph view
 	this.setupGraphView();
 	// set up tree view
@@ -36,24 +32,6 @@ SearchView.prototype.reset = function() {
 	this.setupFringeView();
 }
 
-
-/*
- * Create the fringe view
- */
-SearchView.prototype.setupFringeView = function() {
-	// fringe is empty
-	$( "#fringeDisplay" ).html("<h2>Fringe is empty</h2>");
-	// no nodes have been expanded
-	$( "#expandedNodesDisplay" ).html("<h2>No nodes have been expanded yet</h2>");
-}
-
-
-SearchView.prototype.updateFringeView = function(fringeString, expandedNodesString) {
-	// update list of nodes in fringe
-	$( "#fringeDisplay" ).html("<h2>" + fringeString + "</h2>");
-	// update list of expanded nodes
-	$( "#expandedNodesDisplay" ).html("<h2>" + expandedNodesString + "</h2>");
-}
 
 
 /*
@@ -80,11 +58,12 @@ SearchView.prototype.setupControls = function() {
 	$( "#depthLimitSpnr" ).spinner( "option", "step", 5);
 	// initialize radio buttons for choosing search algorithm
 	$( "#SearchAlgorithm" ).buttonset();
+	// disable the next button
+	$( "#nextBtn" ).prop("disabled",true);
 	// set up event handler for breadth-first search button
 	$( "#bfsBtn" ).click(function() {
 		// if we are already doing BFS, then don't do anything
 		if (searchController.searchAlg == "BFS") {
-// 			console.log("already doing BFS");
 			return;
 		}
 		// reset the controller
@@ -93,41 +72,156 @@ SearchView.prototype.setupControls = function() {
 		$( "#chooseBtn" ).prop("checked", false);
 		$( "#bfsBtn" ).prop("checked", true);
 		$( "#SearchAlgorithm" ).buttonset('refresh');
+		// display the search algorithm
+		$( "#SearchAlgorithmLabel" ).html("Breadth-First Search");
+		// enable the next button
+		$( "#nextBtn" ).prop("disabled",false);
 		// set the search algorithm to breadth-first
 		searchController.searchAlg = "BFS";
 		// do the first step of the algorithm
 		var path = searchController.breadthFirstSearchFirstStep();
-// 		console.log(path);
 		// if path is an array then we already found the solution
 		if (isArray(path)) {
 			alert(path);
 		}
 	});
+	// set up event handler for depth-first search button
+	$( "#dfsBtn" ).click(function() {
+		// if we are already doing DFS, then don't do anything
+		if (searchController.searchAlg == "DFS") {
+			return;
+		}
+		// reset the controller
+		searchController.reset();
+		// check the DFS radio button
+		$( "#chooseBtn" ).prop("checked", false);
+		$( "#dfsBtn" ).prop("checked", true);
+		$( "#SearchAlgorithm" ).buttonset('refresh');
+		// display the search algorithm
+		$( "#SearchAlgorithmLabel" ).html("Depth-First Search");
+		// enable the next button
+		$( "#nextBtn" ).prop("disabled",false);
+		// set the search algorithm to breadth-first
+		searchController.searchAlg = "DFS";
+		// do the first step of the algorithm
+		var path = searchController.depthFirstSearchFirstStep();
+		// if path is an array then we already found the solution
+		if (isArray(path)) {
+			alert(path);
+		}
+	});	
+	// set up event handler for depth-first iterative-deepening search button
+	$( "#dfsidBtn" ).click(function() {
+		// if we are already doing DFS-ID, then don't do anything
+		if (searchController.searchAlg == "DFSID") {
+			return;
+		}
+		// reset the controller
+		searchController.reset();
+		// check the DFS-ID radio button
+		$( "#chooseBtn" ).prop("checked", false);
+		$( "#dfsidBtn" ).prop("checked", true);
+		$( "#SearchAlgorithm" ).buttonset('refresh');
+		// display the search algorithm
+		$( "#SearchAlgorithmLabel" ).html("Depth-First with Iterative Deepening Search");
+		// enable the next button
+		$( "#nextBtn" ).prop("disabled",false);
+		// set the search algorithm to breadth-first
+		searchController.searchAlg = "DFSID";
+		// do the first step of the algorithm
+		var path = searchController.depthFirstSearchIDFirstStep();
+		// if path is an array then we already found the solution
+		if (isArray(path)) {
+			alert(path);
+		}
+	});	
+	// set up event handler for uniform cost search button
+	$( "#ucsBtn" ).click(function() {
+		// if we are already doing UCS, then don't do anything
+		if (searchController.searchAlg == "UCS") {
+			return;
+		}
+		// reset the controller
+		searchController.reset();
+		// check the UCS radio button
+		$( "#chooseBtn" ).prop("checked", false);
+		$( "#ucsBtn" ).prop("checked", true);
+		$( "#SearchAlgorithm" ).buttonset('refresh');
+		// display the search algorithm
+		$( "#SearchAlgorithmLabel" ).html("Uniform Cost Search");
+		// enable the next button
+		$( "#nextBtn" ).prop("disabled",false);
+		// set the search algorithm to breadth-first
+		searchController.searchAlg = "UCS";
+		// do the first step of the algorithm
+		var path = searchController.uniformCostSearchFirstStep();
+		// if path is an array then we already found the solution
+		if (isArray(path)) {
+			alert(path);
+		}
+	});	
 	// add event handler for next step button
 	$( "#nextBtn" ).click(function() {
-// 		console.log("next button pressed");
 		// check the search algorithm
 		switch (searchController.searchAlg) {
 			case "BFS":
 				// do the next step of the algorithm
 				var path = searchController.breadthFirstSearchNextStep();
-// 				console.log(path);
-				// if path is an array then we found the solution
+				// if path is an array then we found the solution or we ran
+				// out of nodes to search
 				if (isArray(path)) {
+					// display the solution path
 					alert(path);
+					// disable the next button
+					$( "#nextBtn" ).prop("disabled",true);
 				}
-// 				console.log("leaving");
+				break;
+			case "DFS":
+				// do the next step of the algorithm
+				var path = searchController.depthFirstSearchNextStep();
+				// if path is an array then we found the solution or we ran
+				// out of nodes to search
+				if (isArray(path)) {
+					// display the solution path
+					alert(path);
+					// disable the next button
+					$( "#nextBtn" ).prop("disabled",true);
+				}
+				break;
+			case "DFSID":
+				// do the next step of the algorithm
+				var path = searchController.depthFirstSearchIDNextStep();
+				// if path is an array then we found the solution or we ran
+				// out of nodes to search
+				if (isArray(path)) {
+					// display the solution path
+					alert(path);
+					// disable the next button
+					$( "#nextBtn" ).prop("disabled",true);
+				}
+				break;
+			case "UCS":
+				// do the next step of the algorithm
+				var path = searchController.uniformCostSearchNextStep();
+				// if path is an array then we found the solution or we ran
+				// out of nodes to search
+				if (isArray(path)) {
+					// display the solution path
+					alert(path);
+					// disable the next button
+					$( "#nextBtn" ).prop("disabled",true);
+				}
 				break;
 			default:
 				alert("No search algorithm selected");
-// 				console.log("no search algorithm selected");
 				break;
 		}
 	});
 	// add event handler for reset button
 	$( "#resetBtn" ).click(function() {
-// 		console.log("reset button pressed");
 		searchController.reset();
+		// reset the search algorithm label
+		$( "#SearchAlgorithmLabel" ).html("Choose a search algorithm by pressing on one of the buttons above.");
 	});
 }
 
@@ -146,6 +240,8 @@ SearchView.prototype.setupGraphView = function() {
 	this.graphContext = this.graphCanvas.getContext('2d');
 	// erase the canvas
 	this.graphContext.clearRect(0, 0, this.graphCanvas.width, this.graphCanvas.height);
+	// set canvas to 1/3 width of window
+	this.graphContext.canvas.width  = (window.innerWidth / 3) - 10;
 	// set radius for each node
 	this.graphNodeRadius = 20;
 	// create an object filled with node objects. each 
@@ -180,6 +276,7 @@ SearchView.prototype.setupGraphView = function() {
 SearchView.prototype.drawGraph = function(nodeList) { 
 	// erase the canvas
 	this.graphContext.clearRect(0, 0, this.graphCanvas.width, this.graphCanvas.height);
+	this.graphContext.canvas.width  = (window.innerWidth / 3) - 10;
 	// draw all the nodes that have been "discovered"
 	this.drawNodes(nodeList);
 	// draw the edges between the discovered nodes
@@ -332,6 +429,8 @@ SearchView.prototype.setupTreeView = function() {
 	this.treeContext = this.treeCanvas.getContext('2d');
 	// erase the canvas
 	this.treeContext.clearRect(0, 0, this.treeCanvas.width, this.treeCanvas.height);
+	// set canvas to 2/3 width of window
+	this.treeContext.canvas.width  = (window.innerWidth * 2 / 3) - 10;
 	// set radius for each node
 	this.treeNodeRadius = 10;
 	// the root node gets drawn in the top center
@@ -345,7 +444,8 @@ SearchView.prototype.setupTreeView = function() {
 
 SearchView.prototype.drawTree = function() { 
 	// erase the canvas
-	this.treeContext.clearRect(0, 0, this.graphCanvas.width, this.graphCanvas.height);
+	this.treeContext.clearRect(0, 0, this.treeCanvas.width, this.treeCanvas.height);
+	this.treeContext.canvas.width  = (window.innerWidth * 2 / 3) - 10;
 	var depthCount = [];
 	this.drawTreeNodes(searchController.searchModel.tree.rootNodeID,	// id of node to be drawn
 						searchController.searchModel.tree.depthList,	// number of nodes at each level
@@ -503,6 +603,30 @@ SearchView.prototype.drawTreeEdge = function(startX, startY,endX, endY) {
 		// fill in the line on the canvas
 		this.treeContext.stroke();
 	} // if we have a context
+}
+
+/*
+ * Create the fringe view
+ */
+SearchView.prototype.setupFringeView = function() {
+	// depth limit doesn't matter
+	$( "#depthLimitDisplay" ).html("<h2>Depth limit only applies for DFS-ID</h2>");
+	// fringe is empty
+	$( "#fringeDisplay" ).html("<h2>Fringe is empty</h2>");
+	// no nodes have been expanded
+	$( "#expandedNodesDisplay" ).html("<h2>No nodes have been expanded yet</h2>");
+}
+
+
+SearchView.prototype.updateFringeView = function(fringeString, expandedNodesString) {
+	// if we are doing DFS-ID, then update the depth limit
+	if (searchController.searchAlg == "DFSID") {
+		$( "#depthLimitDisplay" ).html("<h2>" + searchController.depthLimitCounter + "</h2>");
+	}
+	// update list of nodes in fringe
+	$( "#fringeDisplay" ).html("<h2>" + fringeString + "</h2>");
+	// update list of expanded nodes
+	$( "#expandedNodesDisplay" ).html("<h2>" + expandedNodesString + "</h2>");
 }
 
 

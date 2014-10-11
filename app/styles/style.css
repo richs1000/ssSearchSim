@@ -17,7 +17,7 @@
  * the screen.
  */
 .graphView {
-	border: 5px solid black;
+/*	border: 5px solid black;*/
 	float: left;
 	text-align: center;
 }
@@ -29,7 +29,7 @@
  * view.
  */
 .treeView {
-	border: 5px solid black;
+/*	border: 5px solid black;*/
 	float: left;
 	text-align: center;
 }

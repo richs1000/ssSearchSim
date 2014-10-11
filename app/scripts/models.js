@@ -14,14 +14,8 @@
  * interact with.
  */
 function SearchModel() {
-		// We aren't searching
-		this.searchAlg = "None";
-		// ID of node in graph where search starts
-        this.startNode = 'A';
-        // ID of node in graph where search ends
-        this.endNode = 'K';
-        // depth limit for iterative deepening search
-        this.depthLimit = 50;
+		// set initial values for model variables
+		this.initValues();
         // graph data structure
         this.graph = new GraphModel();
         // tree data structure
@@ -34,15 +28,26 @@ function SearchModel() {
 
 
 /*
+ * This function is used to provide initial values
+ * for search model variables
+ */
+SearchModel.prototype.initValues = function() {
+	// We aren't searching
+	this.searchAlg = "None";
+	// ID of node in graph where search starts
+	this.startNode = 'A';
+	// ID of node in graph where search ends
+	this.endNode = 'T';
+	// depth limit for iterative deepening search
+	this.depthLimit = 50;
+}
+
+/*
  * This function is used to "reset" the search model
  */
 SearchModel.prototype.reset = function() {
-		// ID of node in graph where search starts
-        this.startNode = 'A';
-        // ID of node in graph where search ends
-        this.endNode = 'K';
-        // depth limit for iterative deepening search
-        this.depthLimit = 50;
+		// set initial values for model variables
+		this.initValues();
         // graph data structure
         this.graph.reset();
         // tree data structure
@@ -51,6 +56,21 @@ SearchModel.prototype.reset = function() {
         this.fringe.reset();
 		// Initialize the state space graph
 		this.initializeGraph();
+}
+
+
+/*
+ * This function is used to start a search over without
+ * changing the graph in the search model. This is important
+ * for depth-first search with iterative deepening
+ */
+SearchModel.prototype.restart = function() {
+		// set initial values for model variables
+		this.initValues();
+        // reset the tree data structure
+        this.tree.reset();
+        // reset the fringe data structure
+        this.fringe.reset();
 }
 
 
@@ -99,11 +119,13 @@ SearchModel.prototype.initializeGraph = function() {
 		for (var endNodeID in edgeList[startNodeID]) {
 			// we only want to add some of the possible edges
 			// pick a random number
-			var randNum = Math.floor(Math.random() * 100) + 1
+			var randNum = Math.floor(Math.random() * 100) + 1;
 			// we want about 33% of edges
 			if (randNum <= 33) {
+				// pick a random cost for the edge
+				var randCost = Math.floor(Math.random() * 10) + 1;
 				// add the edge and its cost to the graph model
-				this.addEdgeToGraph(startNodeID, endNodeID, edgeList[startNodeID][endNodeID]);
+				this.addEdgeToGraph(startNodeID, endNodeID, randCost);
 				// if this is an undirected graph, then add an edge in the other direction
 				if (! this.directedGraph) {
 					// add the "opposite" edge and its cost to the graph model
