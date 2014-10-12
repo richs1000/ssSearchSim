@@ -32,8 +32,6 @@ function SearchModel() {
  * for search model variables
  */
 SearchModel.prototype.initValues = function() {
-	// We aren't searching
-	this.searchAlg = "None";
 	// ID of node in graph where search starts
 	this.startNode = 'A';
 	// ID of node in graph where search ends
@@ -420,7 +418,9 @@ SearchModel.prototype.addNodeToTree = function(nodeID, heuristic, cost, parent, 
 	}
 // 	console.log("updating depthList: " + this.tree.depthList);
 	// add node to array of nodes
-	this.tree.nodes[this.tree.nodes.length] = newTreeNode;	
+	this.tree.nodes[this.tree.nodes.length] = newTreeNode;
+	// return a pointer to new tree node
+	return newTreeNode;	
 }
 
 
@@ -535,7 +535,11 @@ FringeModel.prototype.dumpFringe = function() {
 	// loop through all items in the array
 	for	(index = 0; index < this.nodes.length; index++) {
 		// print out each nodeID in the fringe
-		console.log("Index: " + index + " ID: " + this.nodes[index].nodeID);
+		console.log("Index: " + index + 
+					"\tID: " + this.nodes[index].nodeID + 
+					"\tCost: " + this.nodes[index].cost + 
+					"\tHeuristic: " + this.nodes[index].heuristic +
+					"\tDepth: " + this.nodes[index].depth);
 	}
 }
 
@@ -574,23 +578,51 @@ FringeModel.prototype.lowestCostNodeIndex = function() {
 /*
  * This function adds a new tree nodeID to the fringe.
  */
-SearchModel.prototype.addNodeToFringe = function(nodeID, cost, heuristic) {
+SearchModel.prototype.addNodeToFringe = function(nodeID, cost, heuristic, depth) {
 	// Does the tree node exist?
 	if (this.tree.findNode(nodeID) < 0) return;
 	// Did we get a cost value?
-	if (cost === undefined) {
-          cost = 0;
-    }
+	if (cost === undefined) cost = 0;
     // Did we get a heuristic value
-	if (heuristic === undefined) {
-          heuristic = 0;
-    }
+	if (heuristic === undefined) heuristic = 0;
+    // Did we get a depth value
+	if (depth === undefined) depth = 0;
 	// create a fringe node object
 	var newFringeNode = new FringeNode();
 	// set values in object
 	newFringeNode.nodeID = nodeID;
 	newFringeNode.heuristic = heuristic;
-	newFringeNode.cost = cost;	
+	newFringeNode.cost = cost;
+	newFringeNode.depth = depth;	
 	// add fringe node to end of array of nodes
 	this.fringe.nodes[this.fringe.nodes.length] = newFringeNode;	
+}
+
+
+/*
+ * This function removes a node from the fringe and returns it. Which node
+ * gets removed depends on which search algorithm we're using
+ */
+SearchModel.prototype.getNextFringeNode = function(searchAlg) {
+// 	console.log("-------------getNextFringeNode-------------");
+// 	console.log("-----fringe-----");
+// 	this.fringe.dumpFringe();
+	// sanity check - are there any nodes in fringe?
+	if (this.fringe.nodes.length <= 0) return -1;
+	// sanity check - are we searching?
+	if (searchAlg == "None") return -1;
+	// initialize fringeNode
+	var fringeNode = -1;
+	// choose next node based on search algorithm
+	switch (searchAlg) {
+		case "DFS":
+			// if we are doing depth-first search, take the last node added
+			fringeNode = this.fringe.nodes.pop();
+			break;
+		default:
+			alert("No search algorithm selected");
+			break;
+	}
+	// return node
+	return fringeNode;
 }

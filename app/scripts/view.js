@@ -43,6 +43,30 @@ SearchView.prototype.resetControls = function() {
 	$( "#SearchAlgorithm" ).buttonset('refresh');
 }
 
+
+initiateSearch = function(btnID, algLabel, searchAlg) {
+	// if we are already searching, then don't do anything
+	if (searchController.searchAlg == searchAlg) return;
+	// reset the controller
+	searchController.reset();
+	// turn off the "choose" button
+	$( "#chooseBtn" ).prop("checked", false);
+	// check the DFS radio button
+	$( btnID ).prop("checked", true);
+	// make sure button group reflects changes
+	$( "#SearchAlgorithm" ).buttonset('refresh');
+	// display the search algorithm
+	$( "#SearchAlgorithmLabel" ).html(algLabel);
+	// enable the next button
+	$( "#nextBtn" ).prop("disabled",false);
+	// set the search algorithm to breadth-first
+	searchController.searchAlg = searchAlg;
+	// do the first step of the algorithm
+	var path = searchController.breadthFirstSearchFirstStep();
+	// if path is an array then we already found the solution
+	if (isArray(path)) alert(path);
+}
+
 SearchView.prototype.setupControls = function() {
 	// set up event handler for depth limit spinner
 	var depthLimitSpnr = $( "#depthLimitSpnr" ).spinner({
@@ -63,9 +87,7 @@ SearchView.prototype.setupControls = function() {
 	// set up event handler for breadth-first search button
 	$( "#bfsBtn" ).click(function() {
 		// if we are already doing BFS, then don't do anything
-		if (searchController.searchAlg == "BFS") {
-			return;
-		}
+		if (searchController.searchAlg == "BFS") return;
 		// reset the controller
 		searchController.reset();
 		// check the BFS radio button
@@ -87,28 +109,8 @@ SearchView.prototype.setupControls = function() {
 	});
 	// set up event handler for depth-first search button
 	$( "#dfsBtn" ).click(function() {
-		// if we are already doing DFS, then don't do anything
-		if (searchController.searchAlg == "DFS") {
-			return;
-		}
-		// reset the controller
-		searchController.reset();
-		// check the DFS radio button
-		$( "#chooseBtn" ).prop("checked", false);
-		$( "#dfsBtn" ).prop("checked", true);
-		$( "#SearchAlgorithm" ).buttonset('refresh');
-		// display the search algorithm
-		$( "#SearchAlgorithmLabel" ).html("Depth-First Search");
-		// enable the next button
-		$( "#nextBtn" ).prop("disabled",false);
-		// set the search algorithm to breadth-first
-		searchController.searchAlg = "DFS";
-		// do the first step of the algorithm
-		var path = searchController.depthFirstSearchFirstStep();
-		// if path is an array then we already found the solution
-		if (isArray(path)) {
-			alert(path);
-		}
+		initiateSearch("#dfsBtn", "Depth-First Search", "DFS");
+
 	});	
 	// set up event handler for depth-first iterative-deepening search button
 	$( "#dfsidBtn" ).click(function() {
@@ -178,7 +180,7 @@ SearchView.prototype.setupControls = function() {
 				break;
 			case "DFS":
 				// do the next step of the algorithm
-				var path = searchController.depthFirstSearchNextStep();
+				var path = searchController.genericSearchNextStep();
 				// if path is an array then we found the solution or we ran
 				// out of nodes to search
 				if (isArray(path)) {

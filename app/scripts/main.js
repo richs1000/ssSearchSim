@@ -165,6 +165,7 @@ SearchController.prototype.getChildren = function(graphNodeID, treeNodeID) {
 	for (edgeIndex = 0; edgeIndex < this.searchModel.graph.edges.length; edgeIndex++) {
 		// does the edge start at our graph node?
 		if (this.searchModel.graph.edges[edgeIndex].fromNodeID == graphNodeID) {
+			// get ID of child node
 			childNodeID = this.searchModel.graph.edges[edgeIndex].toNodeID;
 			// keep track of new "discovered" graph nodes to update the
 			// view of the graph
@@ -173,15 +174,20 @@ SearchController.prototype.getChildren = function(graphNodeID, treeNodeID) {
 			}
 			// get a unique ID for child node
 			uID = this.uniqueID(childNodeID);
+			// get the index of the start node in the graph
+			var graphChildNodeIndex = this.searchModel.graph.findNode(childNodeID);
+			// sanity check - does the tree node index make sense?
+			if (graphChildNodeIndex < 0) return ["getChildren: graph node index out of bounds"];
+			// get a pointer to the child node
+			var graphChildNode = this.searchModel.graph.nodes[graphChildNodeIndex];
 			// add node to search tree
-			this.searchModel.addNodeToTree(uID,						// nodeID
-											0,						// heuristic
-											0,						// cost
-											treeNodeID,				// parent in tree
-											childNodeID);			// graphNodeID
-			// put node on fringe - it's a queue so we add
-			// to the back
-			this.searchModel.addNodeToFringe(uID);
+			var treeNode = this.searchModel.addNodeToTree(uID,			// nodeID
+											graphChildNode.heuristic,	// heuristic
+											graphChildNode.cost,		// cost
+											treeNodeID,					// parent in tree
+											childNodeID);				// graphNodeID
+			// put node on end of fringe: nodeID, cost, heuristic, depth
+			this.searchModel.addNodeToFringe(uID, treeNode.cost, treeNode.heuristic, treeNode.depth);
 		} // if an edge starts at our current node
 	} // for loop for edges in graph
 }
