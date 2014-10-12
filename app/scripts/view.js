@@ -86,6 +86,8 @@ SearchView.prototype.setupControls = function() {
 	$( "#nextBtn" ).prop("disabled",true);
 	// set up event handler for breadth-first search button
 	$( "#bfsBtn" ).click(function() {
+		initiateSearch("#bfsBtn", "Breadth-First Search", "BFS");
+/*
 		// if we are already doing BFS, then don't do anything
 		if (searchController.searchAlg == "BFS") return;
 		// reset the controller
@@ -106,11 +108,11 @@ SearchView.prototype.setupControls = function() {
 		if (isArray(path)) {
 			alert(path);
 		}
+*/
 	});
 	// set up event handler for depth-first search button
 	$( "#dfsBtn" ).click(function() {
 		initiateSearch("#dfsBtn", "Depth-First Search", "DFS");
-
 	});	
 	// set up event handler for depth-first iterative-deepening search button
 	$( "#dfsidBtn" ).click(function() {
@@ -167,17 +169,6 @@ SearchView.prototype.setupControls = function() {
 		// check the search algorithm
 		switch (searchController.searchAlg) {
 			case "BFS":
-				// do the next step of the algorithm
-				var path = searchController.breadthFirstSearchNextStep();
-				// if path is an array then we found the solution or we ran
-				// out of nodes to search
-				if (isArray(path)) {
-					// display the solution path
-					alert(path);
-					// disable the next button
-					$( "#nextBtn" ).prop("disabled",true);
-				}
-				break;
 			case "DFS":
 				// do the next step of the algorithm
 				var path = searchController.genericSearchNextStep();

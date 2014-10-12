@@ -615,8 +615,12 @@ SearchModel.prototype.getNextFringeNode = function(searchAlg) {
 	var fringeNode = -1;
 	// choose next node based on search algorithm
 	switch (searchAlg) {
+		case "BFS":
+			// if we are doing breadth-first search, take the node added least recently
+			fringeNode = this.fringe.nodes.shift();
+			break;
 		case "DFS":
-			// if we are doing depth-first search, take the last node added
+			// if we are doing depth-first search, take the node added most recently
 			fringeNode = this.fringe.nodes.pop();
 			break;
 		default:
