@@ -90,26 +90,26 @@ SearchModel.prototype.initializeGraph = function() {
 	// of dictionaries with startNodeID:{edge} pairs, where each
 	// {edge} consists of endNodeID:cost pairs
 	var edgeList = {
-		A:{B:1, E:1, F:1},
-		B:{A:1, C:1, E:1, F:1, G:1},
-		C:{B:1, D:1, F:1, G:1, H:1},
-		D:{C:1, G:1, H:1},
-		E:{A:1, B:1, F:1, I:1, J:1},
-		F:{A:1, B:1, C:1, E:1, G:1, I:1, J:1, K:1},
-		G:{B:1, C:1, D:1, F:1, H:1, J:1, K:1, L:1},
-		H:{C:1, D:1, G:1, K:1, L:1},
-		I:{E:1, F:1, J:1, N:1, M:1},
-		J:{E:1, F:1, G:1, I:1, K:1, M:1, N:1, O:1},
-		K:{F:1, G:1, H:1, J:1, L:1, N:1, O:1, P:1},
-		L:{G:1, H:1, K:1, O:1, P:1},
-		M:{I:1, J:1, N:1, Q:1, R:1},
-		N:{I:1, J:1, K:1, M:1, O:1, Q:1, R:1, S:1},
-		O:{J:1, K:1, L:1, N:1, O:1, P:1, R:1, S:1, T:1},
-		P:{K:1, L:1, O:1, S:1, T:1},
-		Q:{M:1, N:1, R:1},
-		R:{M:1, N:1, O:1, Q:1, S:1},
-		S:{N:1, O:1, P:1, R:1, T:1},
-		T:{O:1, P:1, S:1},
+		A:{B:-1, E:-1, F:-1},
+		B:{A:-1, C:-1, E:-1, F:-1, G:-1},
+		C:{B:-1, D:-1, F:-1, G:-1, H:-1},
+		D:{C:-1, G:-1, H:-1},
+		E:{A:-1, B:-1, F:-1, I:-1, J:-1},
+		F:{A:-1, B:-1, C:-1, E:-1, G:-1, I:-1, J:-1, K:-1},
+		G:{B:-1, C:-1, D:-1, F:-1, H:-1, J:-1, K:-1, L:-1},
+		H:{C:-1, D:-1, G:-1, K:-1, L:-1},
+		I:{E:-1, F:-1, J:-1, N:-1, M:-1},
+		J:{E:-1, F:-1, G:-1, I:-1, K:-1, M:-1, N:-1, O:-1},
+		K:{F:-1, G:-1, H:-1, J:-1, L:-1, N:-1, O:-1, P:-1},
+		L:{G:-1, H:-1, K:-1, O:-1, P:-1},
+		M:{I:-1, J:-1, N:-1, Q:-1, R:-1},
+		N:{I:-1, J:-1, K:-1, M:-1, O:-1, Q:-1, R:-1, S:-1},
+		O:{J:-1, K:-1, L:-1, N:-1, O:-1, P:-1, R:-1, S:-1, T:-1},
+		P:{K:-1, L:-1, O:-1, S:-1, T:-1},
+		Q:{M:-1, N:-1, R:-1},
+		R:{M:-1, N:-1, O:-1, Q:-1, S:-1},
+		S:{N:-1, O:-1, P:-1, R:-1, T:-1},
+		T:{O:-1, P:-1, S:-1},
 	};
 	// loop over all of the start nodes
 	for (var startNodeID in edgeList) {
@@ -122,6 +122,7 @@ SearchModel.prototype.initializeGraph = function() {
 			if (randNum <= 33) {
 				// pick a random cost for the edge
 				var randCost = Math.floor(Math.random() * 10) + 1;
+				console.log("cost = " + randCost);
 				// add the edge and its cost to the graph model
 				this.addEdgeToGraph(startNodeID, endNodeID, randCost);
 				// if this is an undirected graph, then add an edge in the other direction
@@ -224,6 +225,25 @@ GraphModel.prototype.findEdge = function(fromNodeID, toNodeID) {
 	    	// return the index of the target nodeID within the 
 	    	// node array
 	    	return index;
+	}
+	// return -1 to indicate that the nodeID wasn't found
+	return -1;
+}
+
+
+/*
+ * This function returns the cost of an edge based on its 
+ * fromNodeID and toNodeID
+ */
+GraphModel.prototype.findEdgeCost = function(fromNodeID, toNodeID) {
+	// loop through edges in tree
+	for	(var index = 0; index < this.edges.length; index++) {
+		// check whether the current nodeID is the target nodeID
+	    if (this.edges[index].fromNodeID == fromNodeID && 
+	    	this.edges[index].toNodeID == toNodeID)
+	    	// return the index of the target nodeID within the 
+	    	// node array
+	    	return this.edges[index].cost;
 	}
 	// return -1 to indicate that the nodeID wasn't found
 	return -1;
@@ -503,6 +523,8 @@ function FringeNode() {
 	this.heuristic = 0;
 	// Cost (g) value - Total cost of all edges traversed to reach this node
 	this.cost = 0;
+	// Depth - Distance from root of search tree to this node
+	this.depth = 0;
 } // FringeNode
 
 
@@ -557,24 +579,6 @@ FringeModel.prototype.fringeToString = function() {
 }
 
 
-FringeModel.prototype.lowestCostNodeIndex = function() {
-	// keep track of current lowest cost
-	var lowestCost = -1;
-	// keep index of node with current lowest cost
-	var lowestCostIndex = -1;
-	// loop through all the items in the fringe
-	for	(index = 0; index < this.nodes.length; index++) {	
-		// compare the current lowest cost to current node's cost
-		if (lowestCost == -1 || lowestCost > this.nodes[index].cost) {
-			// if we found a new lowest cost, keep track of it
-			lowestCost = this.nodes[index].cost;
-			lowestCostIndex = index;
-		}
-	}
-	// return the index
-	return index;
-}
-
 /*
  * This function adds a new tree nodeID to the fringe.
  */
@@ -596,6 +600,44 @@ SearchModel.prototype.addNodeToFringe = function(nodeID, cost, heuristic, depth)
 	newFringeNode.depth = depth;	
 	// add fringe node to end of array of nodes
 	this.fringe.nodes[this.fringe.nodes.length] = newFringeNode;	
+}
+
+
+FringeModel.prototype.minDepthNodeIndex = function() {
+	// keep track of current lowest cost
+	var minDepth = -1;
+	// keep index of node with current lowest cost
+	var minDepthIndex = -1;
+	// loop through all the items in the fringe
+	for	(index = 0; index < this.nodes.length; index++) {	
+		// compare the current lowest cost to current node's cost
+		if (minDepth == -1 || minDepth > this.nodes[index].depth) {
+			// if we found a new minimum depth, keep track of it
+			minDepth = this.nodes[index].depth;
+			minDepthIndex = index;
+		}
+	}
+	// return the index
+	return minDepthIndex;
+}
+
+
+FringeModel.prototype.minCostNodeIndex = function() {
+	// keep track of current lowest cost
+	var lowestCost = -1;
+	// keep index of node with current lowest cost
+	var lowestCostIndex = -1;
+	// loop through all the items in the fringe
+	for	(index = 0; index < this.nodes.length; index++) {	
+		// compare the current lowest cost to current node's cost
+		if (lowestCost == -1 || lowestCost > this.nodes[index].cost) {
+			// if we found a new lowest cost, keep track of it
+			lowestCost = this.nodes[index].cost;
+			lowestCostIndex = index;
+		}
+	}
+	// return the index
+	return lowestCostIndex;
 }
 
 
@@ -622,6 +664,24 @@ SearchModel.prototype.getNextFringeNode = function(searchAlg) {
 		case "DFS":
 			// if we are doing depth-first search, take the node added most recently
 			fringeNode = this.fringe.nodes.pop();
+			break;
+		case "UCS":
+			// if we are doing uniform cost search, take the node with the lowest cost
+			// first we find the node with the lowest cost
+			fringeNodeIndex = this.fringe.minCostNodeIndex();
+			console.log("fringeNodeIndex = " + fringeNodeIndex);
+			console.log("fNI = " + this.fringe.nodes);
+			console.log("fN[fNI] = " + this.fringe.nodes[fringeNodeIndex]);			
+			// make a copy of the node
+			oldFringeNode = this.fringe.nodes[fringeNodeIndex];
+			console.log("old fringe node = " + oldFringeNode);
+			fringeNode = new FringeNode();
+			fringeNode.nodeID = oldFringeNode.nodeID;
+			fringeNode.cost = oldFringeNode.cost;
+			fringeNode.heuristic = oldFringeNode.heuristic;
+			fringeNode.depth = oldFringeNode.depth;
+			// remove the node from the fringe
+			this.fringe.nodes.splice(fringeNodeIndex, 1);
 			break;
 		default:
 			alert("No search algorithm selected");

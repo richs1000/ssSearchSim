@@ -62,7 +62,7 @@ initiateSearch = function(btnID, algLabel, searchAlg) {
 	// set the search algorithm to breadth-first
 	searchController.searchAlg = searchAlg;
 	// do the first step of the algorithm
-	var path = searchController.breadthFirstSearchFirstStep();
+	var path = searchController.genericSearchFirstStep();
 	// if path is an array then we already found the solution
 	if (isArray(path)) alert(path);
 }
@@ -87,35 +87,16 @@ SearchView.prototype.setupControls = function() {
 	// set up event handler for breadth-first search button
 	$( "#bfsBtn" ).click(function() {
 		initiateSearch("#bfsBtn", "Breadth-First Search", "BFS");
-/*
-		// if we are already doing BFS, then don't do anything
-		if (searchController.searchAlg == "BFS") return;
-		// reset the controller
-		searchController.reset();
-		// check the BFS radio button
-		$( "#chooseBtn" ).prop("checked", false);
-		$( "#bfsBtn" ).prop("checked", true);
-		$( "#SearchAlgorithm" ).buttonset('refresh');
-		// display the search algorithm
-		$( "#SearchAlgorithmLabel" ).html("Breadth-First Search");
-		// enable the next button
-		$( "#nextBtn" ).prop("disabled",false);
-		// set the search algorithm to breadth-first
-		searchController.searchAlg = "BFS";
-		// do the first step of the algorithm
-		var path = searchController.breadthFirstSearchFirstStep();
-		// if path is an array then we already found the solution
-		if (isArray(path)) {
-			alert(path);
-		}
-*/
 	});
 	// set up event handler for depth-first search button
 	$( "#dfsBtn" ).click(function() {
 		initiateSearch("#dfsBtn", "Depth-First Search", "DFS");
 	});	
+/*
 	// set up event handler for depth-first iterative-deepening search button
 	$( "#dfsidBtn" ).click(function() {
+		initiateSearch("#dfsidBtn", "Depth-First Search Iterative Deepening", "DFSID");
+
 		// if we are already doing DFS-ID, then don't do anything
 		if (searchController.searchAlg == "DFSID") {
 			return;
@@ -139,8 +120,11 @@ SearchView.prototype.setupControls = function() {
 			alert(path);
 		}
 	});	
+*/
 	// set up event handler for uniform cost search button
 	$( "#ucsBtn" ).click(function() {
+		initiateSearch("#ucsBtn", "Uniform Cost Search", "UCS");
+/*
 		// if we are already doing UCS, then don't do anything
 		if (searchController.searchAlg == "UCS") {
 			return;
@@ -163,24 +147,13 @@ SearchView.prototype.setupControls = function() {
 		if (isArray(path)) {
 			alert(path);
 		}
+*/
 	});	
 	// add event handler for next step button
 	$( "#nextBtn" ).click(function() {
 		// check the search algorithm
 		switch (searchController.searchAlg) {
-			case "BFS":
-			case "DFS":
-				// do the next step of the algorithm
-				var path = searchController.genericSearchNextStep();
-				// if path is an array then we found the solution or we ran
-				// out of nodes to search
-				if (isArray(path)) {
-					// display the solution path
-					alert(path);
-					// disable the next button
-					$( "#nextBtn" ).prop("disabled",true);
-				}
-				break;
+/*
 			case "DFSID":
 				// do the next step of the algorithm
 				var path = searchController.depthFirstSearchIDNextStep();
@@ -193,9 +166,25 @@ SearchView.prototype.setupControls = function() {
 					$( "#nextBtn" ).prop("disabled",true);
 				}
 				break;
+*/
 			case "UCS":
+/*
 				// do the next step of the algorithm
 				var path = searchController.uniformCostSearchNextStep();
+				// if path is an array then we found the solution or we ran
+				// out of nodes to search
+				if (isArray(path)) {
+					// display the solution path
+					alert(path);
+					// disable the next button
+					$( "#nextBtn" ).prop("disabled",true);
+				}
+				break;
+*/
+			case "BFS":
+			case "DFS":
+				// do the next step of the algorithm
+				var path = searchController.genericSearchNextStep();
 				// if path is an array then we found the solution or we ran
 				// out of nodes to search
 				if (isArray(path)) {
@@ -296,6 +285,11 @@ SearchView.prototype.drawEdges = function(nodeList) {
 
 
 SearchView.prototype.drawEdge = function(startNode, endNode) { 
+	// get the cost of the edge
+	var edgeCost = searchController.searchModel.graph.findEdgeCost(startNode, endNode);
+	// if the cost is -1 then we don't need to draw it, so we're done
+	if (edgeCost == -1) return;
+	// make sure we have a canvas to draw in
 	if (this.graphCanvas.getContext) {
 		// start the drawing path
 		this.graphContext.beginPath();
@@ -344,6 +338,21 @@ SearchView.prototype.drawEdge = function(startNode, endNode) {
 		this.graphContext.closePath();
 		// fill in the line on the canvas
 		this.graphContext.stroke();
+		// if we are using an algorithm that doesn't consider cost, add costs to the graph
+		if (searchController.searchAlg == "UCS") {
+			// set the font for the cost
+			this.graphContext.textAlign = "center";
+			this.graphContext.textBaseline = "bottom";
+			this.graphContext.fillStyle = "red";
+			this.graphContext.font = "12pt Helvetica";
+			// get mid-point x,y coordinates
+			var midX = Math.floor((startX + endX) / 2);
+			var midY = Math.floor((startY + endY) / 2);
+			// create a string for the cost value
+			var costString = "g=" + edgeCost;
+			// draw the cost string
+			this.graphContext.fillText(costString, midX, midY);
+		}
 	} // if we have a context
 }
 
@@ -403,7 +412,7 @@ SearchView.prototype.drawNode = function(nodeID) {
 	// get the index to the node list in the model
 	graphNodeIndex = searchController.searchModel.graph.findNode(nodeID);
 	// create a string for the heuristic value
-	hString = "h=" + searchController.searchModel.graph.nodes[graphNodeIndex].heuristic;
+	var hString = "h=" + searchController.searchModel.graph.nodes[graphNodeIndex].heuristic;
 	// draw the heuristic string
 	this.graphContext.fillText(hString, this.graphNodes[nodeID].x, this.graphNodes[nodeID].y);
 }

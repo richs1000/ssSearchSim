@@ -79,7 +79,7 @@ SearchController.prototype.genericSearchNextStep = function() {
 			// We aren't searching
 			this.searchAlg = "None";
 			// return an explanation that we didn't complete the search
-			return ["Exceeded depth limit"];
+			return ["genericSearchNextStep: Exceeded depth limit"];
 		} else {
 			// otherwise, we add the node's children to the fringe
 			this.getChildren(graphNodeID, treeNodeID);
@@ -96,7 +96,7 @@ SearchController.prototype.genericSearchNextStep = function() {
 		// We aren't searching
 		this.searchAlg = "None";
 		// return an explanation of what happened
-		return ["No path exists"];
+		return ["genericSearchNextStep: No path exists"];
 	}
 	// we didn't find what we were looking for, so return -1
 	return -1;
