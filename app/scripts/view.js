@@ -92,97 +92,22 @@ SearchView.prototype.setupControls = function() {
 	$( "#dfsBtn" ).click(function() {
 		initiateSearch("#dfsBtn", "Depth-First Search", "DFS");
 	});	
-/*
-	// set up event handler for depth-first iterative-deepening search button
-	$( "#dfsidBtn" ).click(function() {
-		initiateSearch("#dfsidBtn", "Depth-First Search Iterative Deepening", "DFSID");
-
-		// if we are already doing DFS-ID, then don't do anything
-		if (searchController.searchAlg == "DFSID") {
-			return;
-		}
-		// reset the controller
-		searchController.reset();
-		// check the DFS-ID radio button
-		$( "#chooseBtn" ).prop("checked", false);
-		$( "#dfsidBtn" ).prop("checked", true);
-		$( "#SearchAlgorithm" ).buttonset('refresh');
-		// display the search algorithm
-		$( "#SearchAlgorithmLabel" ).html("Depth-First with Iterative Deepening Search");
-		// enable the next button
-		$( "#nextBtn" ).prop("disabled",false);
-		// set the search algorithm to breadth-first
-		searchController.searchAlg = "DFSID";
-		// do the first step of the algorithm
-		var path = searchController.depthFirstSearchIDFirstStep();
-		// if path is an array then we already found the solution
-		if (isArray(path)) {
-			alert(path);
-		}
-	});	
-*/
 	// set up event handler for uniform cost search button
 	$( "#ucsBtn" ).click(function() {
 		initiateSearch("#ucsBtn", "Uniform Cost Search", "UCS");
-/*
-		// if we are already doing UCS, then don't do anything
-		if (searchController.searchAlg == "UCS") {
-			return;
-		}
-		// reset the controller
-		searchController.reset();
-		// check the UCS radio button
-		$( "#chooseBtn" ).prop("checked", false);
-		$( "#ucsBtn" ).prop("checked", true);
-		$( "#SearchAlgorithm" ).buttonset('refresh');
-		// display the search algorithm
-		$( "#SearchAlgorithmLabel" ).html("Uniform Cost Search");
-		// enable the next button
-		$( "#nextBtn" ).prop("disabled",false);
-		// set the search algorithm to breadth-first
-		searchController.searchAlg = "UCS";
-		// do the first step of the algorithm
-		var path = searchController.uniformCostSearchFirstStep();
-		// if path is an array then we already found the solution
-		if (isArray(path)) {
-			alert(path);
-		}
-*/
+	});	
+	// set up event handler for greedy search button
+	$( "#greedyBtn" ).click(function() {
+		initiateSearch("#greedyBtn", "Greedy Search", "GS");
 	});	
 	// add event handler for next step button
 	$( "#nextBtn" ).click(function() {
 		// check the search algorithm
 		switch (searchController.searchAlg) {
-/*
-			case "DFSID":
-				// do the next step of the algorithm
-				var path = searchController.depthFirstSearchIDNextStep();
-				// if path is an array then we found the solution or we ran
-				// out of nodes to search
-				if (isArray(path)) {
-					// display the solution path
-					alert(path);
-					// disable the next button
-					$( "#nextBtn" ).prop("disabled",true);
-				}
-				break;
-*/
 			case "UCS":
-/*
-				// do the next step of the algorithm
-				var path = searchController.uniformCostSearchNextStep();
-				// if path is an array then we found the solution or we ran
-				// out of nodes to search
-				if (isArray(path)) {
-					// display the solution path
-					alert(path);
-					// disable the next button
-					$( "#nextBtn" ).prop("disabled",true);
-				}
-				break;
-*/
 			case "BFS":
 			case "DFS":
+			case "GS":
 				// do the next step of the algorithm
 				var path = searchController.genericSearchNextStep();
 				// if path is an array then we found the solution or we ran

@@ -575,6 +575,10 @@ FringeModel.prototype.fringeToString = function() {
 		if (searchController.searchAlg == "UCS") {
 			fringeStr += ":" + this.nodes[index].cost;
 		}
+		// if we are doing GS or A*, add in the heuristic
+		if (searchController.searchAlg == "GS") {
+			fringeStr += ":" + this.nodes[index].heuristic;
+		}
 		// put a space between fringe nodes
 		fringeStr += " ";
 	}
@@ -646,6 +650,25 @@ FringeModel.prototype.minCostNodeIndex = function() {
 }
 
 
+FringeModel.prototype.minHeuristicNodeIndex = function() {
+	// keep track of current lowest heuristic
+	var lowestHeuristic = -1;
+	// keep index of node with current lowest heuristic
+	var lowestHeuristicIndex = -1;
+	// loop through all the items in the fringe
+	for	(index = 0; index < this.nodes.length; index++) {	
+		// compare the current lowest heuristic to current node's heuristic
+		if (lowestHeuristic == -1 || lowestHeuristic > this.nodes[index].heuristic) {
+			// if we found a new lowest heuristic, keep track of it
+			lowestHeuristic = this.nodes[index].heuristic;
+			lowestHeuristicIndex = index;
+		}
+	}
+	// return the index
+	return lowestHeuristicIndex;
+}
+
+
 /*
  * This function removes a node from the fringe and returns it. Which node
  * gets removed depends on which search algorithm we're using
@@ -674,6 +697,20 @@ SearchModel.prototype.getNextFringeNode = function(searchAlg) {
 			// if we are doing uniform cost search, take the node with the lowest cost
 			// first we find the node with the lowest cost
 			fringeNodeIndex = this.fringe.minCostNodeIndex();
+			// make a copy of the node
+			oldFringeNode = this.fringe.nodes[fringeNodeIndex];
+			fringeNode = new FringeNode();
+			fringeNode.nodeID = oldFringeNode.nodeID;
+			fringeNode.cost = oldFringeNode.cost;
+			fringeNode.heuristic = oldFringeNode.heuristic;
+			fringeNode.depth = oldFringeNode.depth;
+			// remove the node from the fringe
+			this.fringe.nodes.splice(fringeNodeIndex, 1);
+			break;
+		case "GS":
+			// if we are doing greedy search, take the node with the lowest heuristic
+			// first we find the node with the lowest heuristic
+			fringeNodeIndex = this.fringe.minHeuristicNodeIndex();
 			// make a copy of the node
 			oldFringeNode = this.fringe.nodes[fringeNodeIndex];
 			fringeNode = new FringeNode();
