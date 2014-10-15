@@ -100,6 +100,14 @@ SearchView.prototype.setupControls = function() {
 	$( "#greedyBtn" ).click(function() {
 		initiateSearch("#greedyBtn", "Greedy Search", "GS");
 	});	
+	// set up event handler for A* tree search button
+	$( "#astarBtn" ).click(function() {
+		initiateSearch("#astarBtn", "A* Tree Search", "ASTAR");
+	});	
+	// set up event handler for A* tree search button
+	$( "#astarGraphBtn" ).click(function() {
+		initiateSearch("#astarGraphBtn", "A* Graph Search", "ASTARGRAPH");
+	});	
 	// add event handler for next step button
 	$( "#nextBtn" ).click(function() {
 		// check the search algorithm
@@ -108,6 +116,8 @@ SearchView.prototype.setupControls = function() {
 			case "BFS":
 			case "DFS":
 			case "GS":
+			case "ASTAR":
+			case "ASTARGRAPH":
 				// do the next step of the algorithm
 				var path = searchController.genericSearchNextStep();
 				// if path is an array then we found the solution or we ran
@@ -264,7 +274,9 @@ SearchView.prototype.drawEdge = function(startNode, endNode) {
 		// fill in the line on the canvas
 		this.graphContext.stroke();
 		// if we are using an algorithm that doesn't consider cost, add costs to the graph
-		if (searchController.searchAlg == "UCS") {
+		if (searchController.searchAlg == "UCS" || 
+				searchController.searchAlg == "ASTAR" ||
+				searchController.searchAlg == "ASTARGRAPH") {
 			// set the font for the cost
 			this.graphContext.textAlign = "center";
 			this.graphContext.textBaseline = "bottom";

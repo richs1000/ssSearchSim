@@ -118,9 +118,13 @@ SearchController.prototype.getChildren = function(graphNodeID, treeNodeID) {
 			childNodeID = this.searchModel.graph.edges[edgeIndex].toNodeID;
 			// get cost of edge to child node
 			edgeCost = this.searchModel.graph.edges[edgeIndex].cost;
+			// if we've seen this node before and we are doing A* graph search, then
+			// we're done with this node
+			if (nodeInList(childNodeID, this.discoveredNodes) && this.searchAlg == "ASTARGRAPH") {
+				continue;
+			} else {
 			// keep track of new "discovered" graph nodes to update the
 			// view of the graph
-			if (! nodeInList(childNodeID, this.discoveredNodes)) {
 				this.discoveredNodes[this.discoveredNodes.length] = childNodeID;
 			}
 			// get a unique ID for child node
@@ -139,7 +143,6 @@ SearchController.prototype.getChildren = function(graphNodeID, treeNodeID) {
 											childNodeID);				// graphNodeID
 			// put node on end of fringe: nodeID, cost, heuristic, depth
 			this.searchModel.addNodeToFringe(uID, treeNode.cost, treeNode.heuristic, treeNode.depth);
-			
 		} // if an edge starts at our current node
 	} // for loop for edges in graph
 }

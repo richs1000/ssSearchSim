@@ -76,8 +76,11 @@ SearchModel.prototype.initializeGraph = function() {
 	// This as a quick, cheap way to store initial values
 	// for the nodes in the graph. I'm using an object as
 	//  a dictionary with nodeID:heuristic pairs.
-	var nodeList = {A:4, B:4, C:4, D:4, E:3, F:3, G:3, I:3,
-				J:2, K:2, L:2, M:3, N:2, O:1};
+	var nodeList = {A:7, B:6, C:5, D:4, 
+					E:6, F:5, G:4, H:3,
+					I:5, J:4, K:3, L:2, 
+					M:4, N:3, O:2, P:1,
+					Q:3, R:2, S:1, T:0};
 
 	// Add some nodes to the state space graph
 	// loop over all of the nodes in the node list
@@ -572,15 +575,19 @@ FringeModel.prototype.fringeToString = function() {
 		// add each nodeID in the fringe to our string
 		fringeStr += this.nodes[index].nodeID;
 		// if we are doing UCS or A*, add in the cost
-		if (searchController.searchAlg == "UCS") {
+		if (searchController.searchAlg == "UCS" || 
+				searchController.searchAlg == "ASTAR" ||
+				searchController.searchAlg == "ASTARGRAPH") {
 			fringeStr += ":" + this.nodes[index].cost;
 		}
 		// if we are doing GS or A*, add in the heuristic
-		if (searchController.searchAlg == "GS") {
+		if (searchController.searchAlg == "GS" || 
+				searchController.searchAlg == "ASTAR" ||
+				searchController.searchAlg == "ASTARGRAPH") {
 			fringeStr += ":" + this.nodes[index].heuristic;
 		}
 		// put a space between fringe nodes
-		fringeStr += " ";
+		fringeStr += "  ";
 	}
 	// return the string when we're done
 // 	console.log(fringeStr);
@@ -669,6 +676,26 @@ FringeModel.prototype.minHeuristicNodeIndex = function() {
 }
 
 
+FringeModel.prototype.minFValueNodeIndex = function() {
+	// keep track of current lowest combined cost and heuristic
+	var lowestFValue = -1;
+	// keep index of node with current lowest combined cost and heuristic
+	var lowestFValueIndex = -1;
+	// loop through all the items in the fringe
+	for	(index = 0; index < this.nodes.length; index++) {	
+		var fValue = this.nodes[index].heuristic + this.nodes[index].cost;
+		// compare the current lowest f-value to current node's f-value
+		if (lowestFValue == -1 || lowestFValue > fValue) {
+			// if we found a new lowest heuristic, keep track of it
+			lowestFValue = fValue;
+			lowestFValueIndex = index;
+		}
+	}
+	// return the index
+	return lowestFValueIndex;
+}
+
+
 /*
  * This function removes a node from the fringe and returns it. Which node
  * gets removed depends on which search algorithm we're using
@@ -687,44 +714,39 @@ SearchModel.prototype.getNextFringeNode = function(searchAlg) {
 	switch (searchAlg) {
 		case "BFS":
 			// if we are doing breadth-first search, take the node added least recently
-			fringeNode = this.fringe.nodes.shift();
+			fringeNodeIndex = 0;
 			break;
 		case "DFS":
 			// if we are doing depth-first search, take the node added most recently
-			fringeNode = this.fringe.nodes.pop();
+			fringeNodeIndex = this.fringe.nodes.length;
 			break;
 		case "UCS":
 			// if we are doing uniform cost search, take the node with the lowest cost
-			// first we find the node with the lowest cost
 			fringeNodeIndex = this.fringe.minCostNodeIndex();
-			// make a copy of the node
-			oldFringeNode = this.fringe.nodes[fringeNodeIndex];
-			fringeNode = new FringeNode();
-			fringeNode.nodeID = oldFringeNode.nodeID;
-			fringeNode.cost = oldFringeNode.cost;
-			fringeNode.heuristic = oldFringeNode.heuristic;
-			fringeNode.depth = oldFringeNode.depth;
-			// remove the node from the fringe
-			this.fringe.nodes.splice(fringeNodeIndex, 1);
 			break;
 		case "GS":
 			// if we are doing greedy search, take the node with the lowest heuristic
-			// first we find the node with the lowest heuristic
 			fringeNodeIndex = this.fringe.minHeuristicNodeIndex();
-			// make a copy of the node
-			oldFringeNode = this.fringe.nodes[fringeNodeIndex];
-			fringeNode = new FringeNode();
-			fringeNode.nodeID = oldFringeNode.nodeID;
-			fringeNode.cost = oldFringeNode.cost;
-			fringeNode.heuristic = oldFringeNode.heuristic;
-			fringeNode.depth = oldFringeNode.depth;
-			// remove the node from the fringe
-			this.fringe.nodes.splice(fringeNodeIndex, 1);
+			break;
+		case "ASTAR":
+		case "ASTARGRAPH":
+			// if we are doing A* search, take the node with the lowest combined
+			// cost and heuristic
+			fringeNodeIndex = this.fringe.minFValueNodeIndex();
 			break;
 		default:
 			alert("No search algorithm selected");
 			break;
 	}
+	// make a copy of the node
+	oldFringeNode = this.fringe.nodes[fringeNodeIndex];
+	fringeNode = new FringeNode();
+	fringeNode.nodeID = oldFringeNode.nodeID;
+	fringeNode.cost = oldFringeNode.cost;
+	fringeNode.heuristic = oldFringeNode.heuristic;
+	fringeNode.depth = oldFringeNode.depth;
+	// remove the node from the fringe
+	this.fringe.nodes.splice(fringeNodeIndex, 1);
 	// return node
 	return fringeNode;
 }
