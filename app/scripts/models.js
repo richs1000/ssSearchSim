@@ -122,7 +122,6 @@ SearchModel.prototype.initializeGraph = function() {
 			if (randNum <= 33) {
 				// pick a random cost for the edge
 				var randCost = Math.floor(Math.random() * 10) + 1;
-				console.log("cost = " + randCost);
 				// add the edge and its cost to the graph model
 				this.addEdgeToGraph(startNodeID, endNodeID, randCost);
 				// if this is an undirected graph, then add an edge in the other direction
@@ -571,7 +570,13 @@ FringeModel.prototype.fringeToString = function() {
 	// loop through all items in the array
 	for	(index = 0; index < this.nodes.length; index++) {
 		// add each nodeID in the fringe to our string
-		fringeStr += this.nodes[index].nodeID + " ";
+		fringeStr += this.nodes[index].nodeID;
+		// if we are doing UCS or A*, add in the cost
+		if (searchController.searchAlg == "UCS") {
+			fringeStr += ":" + this.nodes[index].cost;
+		}
+		// put a space between fringe nodes
+		fringeStr += " ";
 	}
 	// return the string when we're done
 // 	console.log(fringeStr);
@@ -669,12 +674,8 @@ SearchModel.prototype.getNextFringeNode = function(searchAlg) {
 			// if we are doing uniform cost search, take the node with the lowest cost
 			// first we find the node with the lowest cost
 			fringeNodeIndex = this.fringe.minCostNodeIndex();
-			console.log("fringeNodeIndex = " + fringeNodeIndex);
-			console.log("fNI = " + this.fringe.nodes);
-			console.log("fN[fNI] = " + this.fringe.nodes[fringeNodeIndex]);			
 			// make a copy of the node
 			oldFringeNode = this.fringe.nodes[fringeNodeIndex];
-			console.log("old fringe node = " + oldFringeNode);
 			fringeNode = new FringeNode();
 			fringeNode.nodeID = oldFringeNode.nodeID;
 			fringeNode.cost = oldFringeNode.cost;
