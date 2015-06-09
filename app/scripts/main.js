@@ -167,7 +167,6 @@ var simModel = new pipit.CapiAdapter.CapiModel({
 
 pipit.CapiAdapter.expose('demoMode', simModel);
  	
-pipit.Controller.notifyOnReady();
 
 $(document).ready(function() {
 	// I don't know why I can't do this in CSS, but I can't and I'm
@@ -176,6 +175,9 @@ $(document).ready(function() {
 	// This should really be in my code for initializing the view, but
 	// it doesn't work there
  	$("#depthLimitSpnr").spinner( "value", 50 );
+
+	pipit.Controller.notifyOnReady();
+
 });
 
 
