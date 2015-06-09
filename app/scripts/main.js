@@ -159,6 +159,11 @@ SearchController.prototype.drawGraph = function() {
 // Create a new Search Controller
 var searchController = new SearchController();
 
+var simModel = new pipit.CapiAdapter.CapiModel({
+    demoMode: true,
+    studentResponse: "5"
+});
+
 
 $(document).ready(function() {
 	// I don't know why I can't do this in CSS, but I can't and I'm
