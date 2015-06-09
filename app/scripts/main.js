@@ -173,7 +173,9 @@ $(document).ready(function() {
 	// it doesn't work there
  	$("#depthLimitSpnr").spinner( "value", 50 );
  	
- 	pipit.CapiAdapter.expose(demoMode, simModel);
+ 	pipit.CapiAdapter.expose('demoMode', simModel);
+ 	
+ 	pipit.Controller.notifyOnReady();
 });
 
 
