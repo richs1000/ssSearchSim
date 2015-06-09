@@ -155,6 +155,10 @@ SearchController.prototype.drawGraph = function() {
 }
 
 
+var simModel = new pipit.CapiAdapter.CapiModel({
+    demoMode: true,
+    studentResponse: "5"
+});
 
 // Create a new Search Controller
 var searchController = new SearchController();
