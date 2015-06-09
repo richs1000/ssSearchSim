@@ -172,6 +172,8 @@ $(document).ready(function() {
 	// This should really be in my code for initializing the view, but
 	// it doesn't work there
  	$("#depthLimitSpnr").spinner( "value", 50 );
+ 	
+ 	pipit.CapiAdapter.expose(demoMode, simModel);
 });
 
 
