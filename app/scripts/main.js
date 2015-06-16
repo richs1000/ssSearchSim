@@ -169,8 +169,8 @@ var simModel = new pipit.CapiAdapter.CapiModel({
 });
 
 
-pipit.CapiAdapter.expose('demoMode', simModel);
 pipit.CapiAdapter.expose('studentResponse', simModel);
+pipit.CapiAdapter.expose('demoMode', simModel);
  	
 
 $(document).ready(function() {
